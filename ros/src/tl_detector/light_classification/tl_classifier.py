@@ -3,16 +3,18 @@ import cv2
 import tensorflow as tf
 import numpy as np
 from styx_msgs.msg import TrafficLight
+import time
 
 class TLClassifier(object):
     def __init__(self):
         #TODO load classifier
-        self.SSD_SIM_FILE = './ssd_sim/frozen_inference_graph.pb'
+        self.SSD_SIM_FILE = './ssd_mobilenet_v1_coco_11_06_2017/frozen_inference_graph.pb'
         self.detection_graph = self.load_graph(self.SSD_SIM_FILE)
         self.image_tensor = self.detection_graph.get_tensor_by_name('image_tensor:0')
         self.detection_boxes = self.detection_graph.get_tensor_by_name('detection_boxes:0')
         self.detection_scores = self.detection_graph.get_tensor_by_name('detection_scores:0')
         self.detection_classes = self.detection_graph.get_tensor_by_name('detection_classes:0')
+        self.tf_session = tf.Session(graph=self.detection_graph)
     
     def load_graph(self, graph_file):
         """Loads a frozen inference graph"""
@@ -74,8 +76,8 @@ class TLClassifier(object):
         #TODO implement light color prediction
         #imgfile = str(rospy.Time.now().to_sec()) + '.jpg'
         #cv2.imwrite(imgfile, image)
-        self.tf_session = tf.Session(graph=self.detection_graph)
         tlScore, tlClass = self.pipeline(image)
         rospy.logwarn("score = {0}".format(tlScore))
         rospy.logwarn("class = {0}".format(tlClass))
-        return TrafficLight.RED
+        rospy.logwarn("classifier time = {0}".format(time.time()))
+        return TrafficLight.GREEN
