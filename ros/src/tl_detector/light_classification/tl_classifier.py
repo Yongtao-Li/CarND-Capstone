@@ -79,5 +79,20 @@ class TLClassifier(object):
         tlScore, tlClass = self.pipeline(image)
         rospy.logwarn("score = {0}".format(tlScore))
         rospy.logwarn("class = {0}".format(tlClass))
-        rospy.logwarn("classifier time = {0}".format(time.time()))
-        return TrafficLight.GREEN
+        #rospy.logwarn("classifier time = {0}".format(time.time()))
+        if (tlClass.size == 0 or tlScore.size == 0):
+            #rospy.logwarn("light state = UNKNOWN")
+            return TrafficLight.UNKNOWN
+        elif (tlClass[np.argmax(tlScore)] == 2):
+            #rospy.logwarn("light state = RED")
+            return TrafficLight.RED
+        elif (tlClass[np.argmax(tlScore)] == 1):
+            #rospy.logwarn("light state = GREEN")
+            return TrafficLight.GREEN
+        elif (tlClass[np.argmax(tlScore)] == 3):
+            #rospy.logwarn("light state = YELLOW")
+            return TrafficLight.YELLOW
+        else:
+            #rospy.logwarn("light state = UNKNOWN")
+            return TrafficLight.UNKNOWN
+        #return TrafficLight.RED
